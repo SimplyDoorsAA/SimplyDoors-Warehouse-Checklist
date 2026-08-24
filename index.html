@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fleet Inspection Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #3498db;
+            --danger: #e74c3c;
+            --success: #2ecc71;
+            --bg: #f5f6fa;
+            --border: #dcdde1;
+        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { margin: 0; padding: 20px; background-color: var(--bg); color: var(--primary); }
+        
+        /* Layout */
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .hidden { display: none !important; }
+        
+        /* Typography */
+        h1, h2, h3 { margin-top: 0; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+        
+        /* Forms & Inputs */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input[type="email"], input[type="text"], input[type="number"], select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; }
+        button { background-color: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
+        button:hover { opacity: 0.9; }
+        button.danger { background-color: var(--danger); }
+        button.success { background-color: var(--success); }
+        
+        /* Dashboard Grids */
+        .grid-header, .grid-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; padding: 10px; border-bottom: 1px solid var(--border); }
+        .grid-header { font-weight: bold; background-color: var(--secondary); color: white; }
+        
+        /* Checklist Table */
+        .checklist-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .checklist-table th, .checklist-table td { border: 1px solid var(--border); padding: 12px; text-align: left; }
+        .checklist-table th { background-color: var(--secondary); color: white; }
+        .radio-group { display: flex; gap: 15px; }
+        
+        /* Signature Canvas */
+        .signature-wrapper { border: 2px dashed var(--border); background: #fafafa; position: relative; margin-bottom: 15px; touch-action: none; }
+        canvas { width: 100%; height: 200px; display: block; }
+        
+        /* Alerts */
+        .alert { background-color: var(--danger); color: white; padding: 15px; border-radius: 4px; margin-bottom: 20px; display: none; }
+
+        /* Mobile Optimization */
+        @media (max-width: 768px) {
+            .grid-header { display: none; }
+            .grid-row { grid-template-columns: 1fr; border: 1px solid var(--border); margin-bottom: 10px; border-radius: 4px; padding: 15px; background: white; }
+            .grid-row::before { content: attr(data-label); font-weight: bold; color: var(--accent); }
+            
+            .checklist-table, .checklist-table tbody, .checklist-table tr, .checklist-table td { display: block; width: 100%; }
+            .checklist-table tr { margin-bottom: 15px; border: 1px solid var(--border); border-radius: 4px; }
+            .checklist-table th { display: none; }
+            .checklist-table td { text-align: left; border: none; border-bottom: 1px solid #eee; position: relative; padding-left: 15px; }
+            .checklist-table td:last-child { border-bottom: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login View -->
+    <div id="view-login" class="container">
+        <h1>Fleet Inspection Portal</h1>
+        <div class="form-group">
+            <label for="emailInput">Work Email</label>
+            <input type="email" id="emailInput" placeholder="name@simplydoors.com" required>
+        </div>
+        <button onclick="app.login()">Login</button>
+    </div>
+
+    <!-- Dashboard View -->
+    <div id="view-dashboard" class="container hidden">
+        <h1 id="dashboardTitle">Dashboard</h1>
+        <div class="form-group">
+            <button onclick="app.startInspection()" id="btnNewInspection">Start New Pre-Trip Inspection</button>
+        </div>
+        <h2>Recent Inspections</h2>
+        <div id="inspectionGrid">
+            <div class="grid-header">
+                <div>Date</div>
+                <div>Vehicle</div>
+                <div>Driver</div>
+                <div>Status</div>
+            </div>
+            <div id="gridBody"></div>
+        </div>
+        <br>
+        <button class="danger" onclick="app.logout()">Logout</button>
+    </div>
+
+    <!-- Inspection Form View -->
+    <div id="view-form" class="container hidden">
+        <h1>Pre-Trip Inspection</h1>
+        <div class="alert" id="criticalAlert">CRITICAL DEFECT LOGGED. VEHICLE IS OUT OF SERVICE.</div>
+        
+        <div class="form-group">
+            <label>Vehicle ID</label>
+            <select id="vehicleId">
+                <option value="SD-TRK-01">SD-TRK-01 (Box Truck)</option>
+                <option value="SD-TRK-02">SD-TRK-02 (Box Truck)</option>
+                <option value="SD-VAN-01">SD-VAN-01 (Cargo Van)</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Starting Odometer</label>
+            <input type="number" id="startOdo" required>
+        </div>
+
+        <h3>1. Engine & Fluid Inspection</h3>
+        <table class="checklist-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Engine Oil Level (Critical)</td>
+                    <td>
+                        <div class="radio-group">
+                            <label><input type="radio" name="chk_oil" value="Pass" onchange="app.checkCritical(this, true)"> Pass</label>
+                            <label><input type="radio" name="chk_oil" value="Fail" onchange="app.checkCritical(this, true)"> Fail</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Brake Fluid Level (Critical)</td>
+                    <td>
+                        <div class="radio-group">
+                            <label><input type="radio" name="chk_brake" value="Pass" onchange="app.checkCritical(this, true)"> Pass</label>
+                            <label><input type="radio" name="chk_brake" value="Fail" onchange="app.checkCritical(this, true)"> Fail</label>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>2. Exterior & Cargo</h3>
+        <table class="checklist-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Tire Condition & Pressure (Critical)</td>
+                    <td>
+                        <div class="radio-group">
+                            <label><input type="radio" name="chk_tires" value="Pass" onchange="app.checkCritical(this, true)"> Pass</label>
+                            <label><input type="radio" name="chk_tires" value="Fail" onchange="app.checkCritical(this, true)"> Fail</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Body Condition (Scratches/Dents)</td>
+                    <td>
+                        <div class="radio-group">
+                            <label><input type="radio" name="chk_body" value="Pass"> Pass</label>
+                            <label><input type="radio" name="chk_body" value="Fail"> Fail</label>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Sign-off</h3>
+        <div class="signature-wrapper">
+            <canvas id="sigCanvas"></canvas>
+        </div>
+        <div class="form-group">
+            <button onclick="app.clearSignature()" style="background: var(--secondary); margin-bottom: 10px;">Clear Signature</button>
+            <button class="success" onclick="app.submitInspection()">Submit Inspection</button>
+            <button class="danger" onclick="app.cancelForm()" style="margin-top: 10px;">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        const app = {
+            currentUser: null,
+            signaturePad: null,
+            db: JSON.parse(localStorage.getItem('fleetLogs')) || [],
+
+            init() {
+                const canvas = document.getElementById('sigCanvas');
+                // Adjust canvas resolution for high-DPI screens to prevent blurry strokes
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                canvas.getContext("2d").scale(ratio, ratio);
+                
+                this.signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(250, 250, 250)' });
+            },
+
+            switchView(viewId) {
+                document.querySelectorAll('.container').forEach(el => el.classList.add('hidden'));
+                document.getElementById(viewId).classList.remove('hidden');
+            },
+
+            login() {
+                const email = document.getElementById('emailInput').value.toLowerCase();
+                if (!email) return alert('Enter an email.');
+                
+                this.currentUser = {
+                    email: email,
+                    role: email.includes('manager') ? 'Manager' : 'Employee'
+                };
+                
+                document.getElementById('dashboardTitle').innerText = `${this.currentUser.role} Dashboard`;
+                if (this.currentUser.role === 'Manager') {
+                    document.getElementById('btnNewInspection').classList.add('hidden');
+                } else {
+                    document.getElementById('btnNewInspection').classList.remove('hidden');
+                }
+                
+                this.renderGrid();
+                this.switchView('view-dashboard');
+            },
+
+            logout() {
+                this.currentUser = null;
+                document.getElementById('emailInput').value = '';
+                this.switchView('view-login');
+            },
+
+            startInspection() {
+                document.getElementById('criticalAlert').style.display = 'none';
+                document.querySelectorAll('input[type="radio"]').forEach(radio => radio.checked = false);
+                document.getElementById('startOdo').value = '';
+                this.clearSignature();
+                this.switchView('view-form');
+            },
+
+            cancelForm() {
+                this.switchView('view-dashboard');
+            },
+
+            clearSignature() {
+                this.signaturePad.clear();
+            },
+
+            checkCritical(element, isCritical) {
+                if (isCritical && element.value === 'Fail') {
+                    document.getElementById('criticalAlert').style.display = 'block';
+                } else {
+                    // Check if any other critical failures exist before hiding alert
+                    const criticalFails = Array.from(document.querySelectorAll('input[type="radio"]:checked'))
+                                             .filter(el => el.value === 'Fail' && el.name !== 'chk_body'); // chk_body is non-critical
+                    if (criticalFails.length === 0) {
+                        document.getElementById('criticalAlert').style.display = 'none';
+                    }
+                }
+            },
+
+            submitInspection() {
+                if (this.signaturePad.isEmpty()) return alert('Signature is required.');
+                
+                const vehicleId = document.getElementById('vehicleId').value;
+                const isOOS = document.getElementById('criticalAlert').style.display === 'block';
+                
+                const payload = {
+                    id: Date.now(),
+                    date: new Date().toLocaleString(),
+                    driver: this.currentUser.email,
+                    vehicle: vehicleId,
+                    status: isOOS ? 'Out of Service' : 'Cleared',
+                    signature: this.signaturePad.toDataURL('image/jpeg', 0.5) // Compressing base64 string
+                };
+                
+                this.db.push(payload);
+                localStorage.setItem('fleetLogs', JSON.stringify(this.db));
+                
+                if (isOOS) {
+                    alert(`CRITICAL ALERT DISPATCHED TO MANAGER.\nVehicle ${vehicleId} is grounded.`);
+                }
+                
+                this.renderGrid();
+                this.switchView('view-dashboard');
+            },
+
+            renderGrid() {
+                const grid = document.getElementById('gridBody');
+                grid.innerHTML = '';
+                
+                // Sort newest first
+                const sortedDb = [...this.db].sort((a, b) => b.id - a.id);
+                
+                sortedDb.forEach(log => {
+                    const row = document.createElement('div');
+                    row.className = 'grid-row';
+                    row.innerHTML = `
+                        <div data-label="Date: ">${log.date}</div>
+                        <div data-label="Vehicle: ">${log.vehicle}</div>
+                        <div data-label="Driver: ">${log.driver}</div>
+                        <div data-label="Status: " style="color: ${log.status === 'Cleared' ? 'var(--success)' : 'var(--danger)'}; font-weight: bold;">${log.status}</div>
+                    `;
+                    grid.appendChild(row);
+                });
+            }
+        };
+
+        window.onload = () => app.init();
+    </script>
+</body>
+</html>
