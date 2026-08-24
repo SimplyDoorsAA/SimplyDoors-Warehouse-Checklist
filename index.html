@@ -80,8 +80,12 @@
         
         .help-text { font-size: 0.8rem; color: var(--secondary); margin-bottom: 8px; font-style: italic; }
 
-        input[type="text"], input[type="number"], input[type="date"], input[type="time"], select, textarea {
+        input[type="text"], input[type="password"], input[type="number"], input[type="date"], input[type="time"], select, textarea {
             padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem; width: 100%;
+        }
+        
+        input[type="file"] {
+            padding: 10px; border: 1px dashed var(--primary); border-radius: 4px; font-size: 1rem; width: 100%; background: #eef5fb; cursor: pointer;
         }
 
         textarea { resize: vertical; min-height: 100px; }
@@ -134,8 +138,19 @@
     <div class="section">
         <h2>Team Sign In</h2>
         <div class="form-group">
-            <label for="employeeName">Employee Name / ID</label>
-            <input type="text" id="employeeName" placeholder="Enter your full name or ID" required>
+            <label for="employeeName">Select Employee</label>
+            <select id="employeeName" required>
+                <option value="" disabled selected>Select your name...</option>
+                <option value="Bill Smith">Bill Smith</option>
+                <option value="Bob Benson">Bob Benson</option>
+                <option value="Brian">Brian</option>
+                <option value="Billy">Billy</option>
+            </select>
+        </div>
+        <div class="form-group" id="passwordGroup">
+            <label for="employeePassword">Password / PIN</label>
+            <input type="password" id="employeePassword" placeholder="Enter your password">
+            <div class="help-text" id="passwordHelpText">If this is your first time logging in on this device, entering a password will save it for future use.</div>
         </div>
         <button class="btn" onclick="startSession()">Access Portal</button>
     </div>
@@ -183,14 +198,28 @@
         </div>
         <div class="section grid-2">
             <div class="form-group">
-                <label for="vehicleId">Vehicle ID / Unit #</label>
-                <input type="text" id="vehicleId" required>
+                <label for="vehicleId">Vehicle Selection</label>
+                <select id="vehicleId" required>
+                    <option value="" disabled selected>Select a vehicle...</option>
+                    <option value="Truck A">Truck A</option>
+                    <option value="Truck B">Truck B</option>
+                    <option value="Truck C">Truck C</option>
+                </select>
             </div>
             <div class="form-group">
                 <label for="odometer">Current Odometer</label>
                 <input type="number" id="odometer" required>
             </div>
         </div>
+        
+        <div class="section">
+            <div class="form-group">
+                <label for="vehiclePhoto">Attach Photo (Optional)</label>
+                <div class="help-text">Take a picture of the vehicle or any specific damage.</div>
+                <input type="file" id="vehiclePhoto" accept="image/*" capture="environment">
+            </div>
+        </div>
+
         <div class="section grid-3">
             <div class="checklist-group">
                 <h3>Engine / Fluids</h3>
@@ -262,79 +291,18 @@
     </div>
     <form id="incidentForm" onsubmit="submitIncidentForm(event)">
         <div class="section grid-3">
-            <div class="form-group">
-                <label for="incName">Employee Name</label>
-                <input type="text" id="incName" required readonly>
-            </div>
-            <div class="form-group">
-                <label for="incJobTitle">Job Title</label>
-                <input type="text" id="incJobTitle" required>
-            </div>
-            <div class="form-group">
-                <label for="incDepartment">Department</label>
-                <input type="text" id="incDepartment" required>
-            </div>
-            <div class="form-group">
-                <label for="incSupervisor">Supervisor</label>
-                <input type="text" id="incSupervisor" required>
-            </div>
-            <div class="form-group">
-                <label for="incDate">Date of Incident</label>
-                <input type="date" id="incDate" required>
-            </div>
-            <div class="form-group">
-                <label for="incTime">Time of Incident</label>
-                <input type="time" id="incTime" required>
-            </div>
-            <div class="form-group full-width">
-                <label for="incLocation">Location</label>
-                <input type="text" id="incLocation" required>
-            </div>
+            <div class="form-group"><label>Employee Name</label><input type="text" id="incName" required readonly></div>
+            <div class="form-group"><label>Job Title</label><input type="text" id="incJobTitle" required></div>
+            <div class="form-group"><label>Department</label><input type="text" id="incDepartment" required></div>
+            <div class="form-group"><label>Supervisor</label><input type="text" id="incSupervisor" required></div>
+            <div class="form-group"><label>Date</label><input type="date" id="incDate" required></div>
+            <div class="form-group"><label>Time</label><input type="time" id="incTime" required></div>
+            <div class="form-group full-width"><label>Location</label><input type="text" id="incLocation" required></div>
         </div>
-
-        <div class="section">
-            <div class="form-group">
-                <label for="incDescription">Description of Incident</label>
-                <div class="help-text">Provide a detailed, factual account of the incident. Include only objective observations, avoiding opinions or assumptions.</div>
-                <textarea id="incDescription" required></textarea>
-            </div>
-        </div>
-
-        <div class="section grid-3">
-            <div class="form-group full-width" style="margin-bottom: 0;">
-                <label>Witnesses</label>
-            </div>
-            <div class="form-group"><input type="text" id="incWitness1" placeholder="Name 1"></div>
-            <div class="form-group"><input type="text" id="incWitness2" placeholder="Name 2"></div>
-            <div class="form-group"><input type="text" id="incWitness3" placeholder="Name 3"></div>
-        </div>
-
-        <div class="section">
-            <div class="form-group">
-                <label for="incAction">Immediate Action Taken</label>
-                <textarea id="incAction" required></textarea>
-            </div>
-            <div class="form-group">
-                <label for="incRootCause">Root Cause Analysis</label>
-                <textarea id="incRootCause" required></textarea>
-            </div>
-            <div class="form-group">
-                <label for="incPreventative">Preventative Measures</label>
-                <textarea id="incPreventative" required></textarea>
-            </div>
-        </div>
-
-        <div class="section grid-2">
-            <div class="form-group">
-                <label for="incPolicy">Company Policy Involved (if applicable)</label>
-                <input type="text" id="incPolicy" placeholder="Policy or Procedure">
-            </div>
-            <div class="form-group">
-                <label for="incCorrective">Corrective Action</label>
-                <input type="text" id="incCorrective" placeholder="Action taken/required">
-            </div>
-        </div>
-
+        <div class="section"><div class="form-group"><label>Description of Incident</label><textarea id="incDescription" required></textarea></div></div>
+        <div class="section grid-3"><div class="form-group full-width" style="margin-bottom: 0;"><label>Witnesses</label></div><div class="form-group"><input type="text" id="incWitness1" placeholder="Name 1"></div><div class="form-group"><input type="text" id="incWitness2" placeholder="Name 2"></div><div class="form-group"><input type="text" id="incWitness3" placeholder="Name 3"></div></div>
+        <div class="section"><div class="form-group"><label>Immediate Action Taken</label><textarea id="incAction" required></textarea></div><div class="form-group"><label>Root Cause Analysis</label><textarea id="incRootCause" required></textarea></div><div class="form-group"><label>Preventative Measures</label><textarea id="incPreventative" required></textarea></div></div>
+        <div class="section grid-2"><div class="form-group"><label>Company Policy Involved</label><input type="text" id="incPolicy"></div><div class="form-group"><label>Corrective Action</label><input type="text" id="incCorrective"></div></div>
         <button type="submit" class="btn" id="incSubmitBtn">Submit Incident Report</button>
     </form>
 </div>
@@ -344,12 +312,36 @@
     let currentEmployee = "";
 
     function startSession() {
-        const nameInput = document.getElementById('employeeName').value.trim();
-        if (!nameInput) { alert("Please enter your Name or ID to continue."); return; }
-        currentEmployee = nameInput;
+        const nameSelect = document.getElementById('employeeName').value;
+        const passwordInput = document.getElementById('employeePassword').value;
+
+        if (!nameSelect) {
+            alert("Please select your name from the dropdown.");
+            return;
+        }
+        if (!passwordInput) {
+            alert("Please enter your password.");
+            return;
+        }
+
+        const storageKey = `pwd_${nameSelect.replace(/\\s+/g, '')}`;
+        const savedPassword = localStorage.getItem(storageKey);
+
+        if (savedPassword) {
+            if (savedPassword !== passwordInput) {
+                alert("Incorrect password for this user.");
+                return;
+            }
+        } else {
+            localStorage.setItem(storageKey, passwordInput);
+            alert(`Password set and saved for ${nameSelect} on this device.`);
+        }
+
+        currentEmployee = nameSelect;
         document.getElementById('loginView').classList.add('hidden');
         document.getElementById('dashboardView').classList.remove('hidden');
         document.getElementById('dashTimestamp').innerText = new Date().toLocaleString();
+        document.getElementById('employeePassword').value = ""; 
     }
 
     function showForm(viewId) {
@@ -370,6 +362,32 @@
         document.getElementById('dashboardView').classList.remove('hidden');
     }
 
+    async function processImage(file) {
+        return new Promise((resolve) => {
+            if (!file) {
+                resolve("");
+                return;
+            }
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800;
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    resolve(dataUrl.split(',')[1]); 
+                }
+            };
+        });
+    }
+
     async function sendToGoogle(payload, btnElement, formElement) {
         const originalText = btnElement.innerText;
         btnElement.innerText = "Transmitting...";
@@ -383,13 +401,11 @@
         try {
             const response = await fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
-                body: formData,
-                // mode: 'no-cors' // Do not uncomment unless CORS strictly blocks transmission. Read edge cases below.
+                body: formData
             });
 
-            // Google Apps Script responses can be tricky. Even successful posts might throw standard ok checks due to redirects.
             if (response.ok || response.type === 'opaque') {
-                alert("Report successfully submitted and routed to management.");
+                alert("Report successfully submitted.");
                 formElement.reset();
                 returnToDashboard();
             } else {
@@ -397,14 +413,14 @@
             }
         } catch (error) {
             console.error('Error!', error.message);
-            alert("Transmission failed. Please check your internet connection and try again.");
+            alert("Transmission failed. Please check your internet connection.");
         } finally {
             btnElement.innerText = originalText;
             btnElement.disabled = false;
         }
     }
 
-    function submitVehicleForm(event) {
+    async function submitVehicleForm(event) {
         event.preventDefault();
         const criticalFlags = document.querySelectorAll('.critical-flag:checked');
         const hasCriticalIssue = criticalFlags.length > 0;
@@ -415,6 +431,9 @@
             return;
         }
 
+        const photoInput = document.getElementById('vehiclePhoto');
+        const base64Photo = await processImage(photoInput.files[0]);
+
         const payload = {
             FormType: "Vehicle Inspection",
             Employee: currentEmployee,
@@ -423,7 +442,7 @@
             Odometer: document.getElementById('odometer').value,
             CriticalIssue: hasCriticalIssue ? "YES" : "NO",
             Remarks: remarks || "None",
-            RawData: "See database for full checklist array" 
+            PhotoData: base64Photo 
         };
 
         sendToGoogle(payload, document.getElementById('vehSubmitBtn'), document.getElementById('inspectionForm'));
@@ -448,7 +467,6 @@
             Policy: document.getElementById('incPolicy').value,
             CorrectiveAction: document.getElementById('incCorrective').value
         };
-
         sendToGoogle(payload, document.getElementById('incSubmitBtn'), document.getElementById('incidentForm'));
     }
 </script>
