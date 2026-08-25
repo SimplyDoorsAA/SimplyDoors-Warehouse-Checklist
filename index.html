@@ -349,8 +349,7 @@
 </div>
 
 <script>
-    // ENSURE YOUR ACTIVE WEB APP URL IS PLACED HERE
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/REPLACE_WITH_YOUR_NEW_URL/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzuCHzlg7rKrtH_vPin_1TlodIllIAt694ACx9sxHehOuEZ2mziYjmGufQl_lBgIYfAlOA/exec";
     let currentEmployee = "";
 
     function startSession() {
@@ -435,15 +434,20 @@
         }
 
         try {
-            const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzuCHzlg7rKrtH_vPin_1TlodIllIAt694ACx9sxHehOuEZ2mziYjmGufQl_lBgIYfAlOA/exec";
-            if (response.ok || response.type === 'opaque') {
-                alert("Report successfully submitted.");
-                formElement.reset();
-                returnToDashboard();
-            } else { throw new Error("Network response was not ok"); }
+            // mode: 'no-cors' prevents browser crash on Google redirect
+            await fetch(GOOGLE_SCRIPT_URL, { 
+                method: 'POST', 
+                body: formData,
+                mode: 'no-cors' 
+            });
+            
+            alert("Report successfully submitted.");
+            formElement.reset();
+            returnToDashboard();
+            
         } catch (error) {
-            console.error('Error!', error.message);
-            alert("Transmission failed. Please check your connection.");
+            console.error('Transmission Error:', error);
+            alert("Transmission failed. Please check your internet connection.");
         } finally {
             btnElement.innerText = originalText;
             btnElement.disabled = false;
