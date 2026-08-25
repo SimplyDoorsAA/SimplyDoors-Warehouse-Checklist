@@ -435,7 +435,7 @@
         }
 
         try {
-            const response = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: formData });
+            const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzuCHzlg7rKrtH_vPin_1TlodIllIAt694ACx9sxHehOuEZ2mziYjmGufQl_lBgIYfAlOA/exec";
             if (response.ok || response.type === 'opaque') {
                 alert("Report successfully submitted.");
                 formElement.reset();
