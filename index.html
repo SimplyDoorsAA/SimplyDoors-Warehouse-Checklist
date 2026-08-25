@@ -131,6 +131,7 @@
 </head>
 <body>
 
+<!-- LOGIN VIEW -->
 <div class="container" id="loginView">
     <h1>SimplyDoors Operations Portal</h1>
     <div class="section">
@@ -154,6 +155,7 @@
     </div>
 </div>
 
+<!-- DASHBOARD VIEW -->
 <div class="container hidden" id="dashboardView">
     <div class="header-controls">
         <h1>Select Module</h1>
@@ -212,33 +214,34 @@
                 <input type="file" id="vehPhoto3" accept="image/*" capture="environment">
             </div>
         </div>
+        
         <div class="section grid-3">
+            <!-- ENGINE -->
             <div class="checklist-group">
                 <h3>Engine / Fluids</h3>
-                <script>
-                    const engineItems = ['Fuel Level', 'Oil Level', 'Transmission Fluid', 'Coolant', 'Leaks Under Vehicle'];
-                    engineItems.forEach((item, index) => {
-                        document.write(`<div class="checklist-item"><span>${item}</span><div class="radio-group"><label><input type="radio" name="eng_${index}" value="OK" required> OK</label><label><input type="radio" name="eng_${index}" value="Defective" class="critical-flag"> Defective</label></div></div>`);
-                    });
-                </script>
+                <div class="checklist-item"><span>Fuel Level</span><div class="radio-group"><label><input type="radio" name="eng_0" value="OK" required> OK</label><label><input type="radio" name="eng_0" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Oil Level</span><div class="radio-group"><label><input type="radio" name="eng_1" value="OK" required> OK</label><label><input type="radio" name="eng_1" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Transmission Fluid</span><div class="radio-group"><label><input type="radio" name="eng_2" value="OK" required> OK</label><label><input type="radio" name="eng_2" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Coolant</span><div class="radio-group"><label><input type="radio" name="eng_3" value="OK" required> OK</label><label><input type="radio" name="eng_3" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Leaks Under Vehicle</span><div class="radio-group"><label><input type="radio" name="eng_4" value="OK" required> OK</label><label><input type="radio" name="eng_4" value="Defective" class="critical-flag"> Defective</label></div></div>
             </div>
+            <!-- EXTERIOR -->
             <div class="checklist-group">
                 <h3>Exterior</h3>
-                <script>
-                    const exteriorItems = ['Headlights / Taillights', 'Turn Signals', 'Tire Condition', 'Mirrors', 'Body Damage'];
-                    exteriorItems.forEach((item, index) => {
-                        document.write(`<div class="checklist-item"><span>${item}</span><div class="radio-group"><label><input type="radio" name="ext_${index}" value="OK" required> OK</label><label><input type="radio" name="ext_${index}" value="Defective" class="critical-flag"> Defective</label></div></div>`);
-                    });
-                </script>
+                <div class="checklist-item"><span>Headlights / Taillights</span><div class="radio-group"><label><input type="radio" name="ext_0" value="OK" required> OK</label><label><input type="radio" name="ext_0" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Turn Signals</span><div class="radio-group"><label><input type="radio" name="ext_1" value="OK" required> OK</label><label><input type="radio" name="ext_1" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Tire Condition</span><div class="radio-group"><label><input type="radio" name="ext_2" value="OK" required> OK</label><label><input type="radio" name="ext_2" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Mirrors</span><div class="radio-group"><label><input type="radio" name="ext_3" value="OK" required> OK</label><label><input type="radio" name="ext_3" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Body Damage</span><div class="radio-group"><label><input type="radio" name="ext_4" value="OK" required> OK</label><label><input type="radio" name="ext_4" value="Defective" class="critical-flag"> Defective</label></div></div>
             </div>
+            <!-- INTERIOR -->
             <div class="checklist-group">
                 <h3>Interior</h3>
-                <script>
-                    const interiorItems = ['Brakes / Parking Brake', 'Steering', 'Horn', 'Wipers', 'Seatbelts'];
-                    interiorItems.forEach((item, index) => {
-                        document.write(`<div class="checklist-item"><span>${item}</span><div class="radio-group"><label><input type="radio" name="int_${index}" value="OK" required> OK</label><label><input type="radio" name="int_${index}" value="Defective" class="critical-flag"> Defective</label></div></div>`);
-                    });
-                </script>
+                <div class="checklist-item"><span>Brakes / Parking Brake</span><div class="radio-group"><label><input type="radio" name="int_0" value="OK" required> OK</label><label><input type="radio" name="int_0" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Steering</span><div class="radio-group"><label><input type="radio" name="int_1" value="OK" required> OK</label><label><input type="radio" name="int_1" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Horn</span><div class="radio-group"><label><input type="radio" name="int_2" value="OK" required> OK</label><label><input type="radio" name="int_2" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Wipers</span><div class="radio-group"><label><input type="radio" name="int_3" value="OK" required> OK</label><label><input type="radio" name="int_3" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Seatbelts</span><div class="radio-group"><label><input type="radio" name="int_4" value="OK" required> OK</label><label><input type="radio" name="int_4" value="Defective" class="critical-flag"> Defective</label></div></div>
             </div>
         </div>
         <div class="section">
@@ -346,6 +349,7 @@
 </div>
 
 <script>
+    // STOP AND REPLACE THIS URL
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/REPLACE_WITH_YOUR_NEW_URL/exec";
     let currentEmployee = "";
 
