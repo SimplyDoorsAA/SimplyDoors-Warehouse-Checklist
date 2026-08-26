@@ -260,8 +260,15 @@
     <form id="incidentForm" onsubmit="submitEmployeeIncidentForm(event)">
         <div class="section grid-3">
             <div class="form-group"><label>Employee Name</label><input type="text" id="incName" required readonly></div>
-            <div class="form-group"><label>Job Title</label><input type="text" id="incJobTitle" required></div>
-            <div class="form-group"><label>Department</label><input type="text" id="incDepartment" required></div>
+            <div class="form-group">
+                <label>Department</label>
+                <select id="incDepartment" required>
+                    <option value="" disabled selected>Select department...</option>
+                    <option value="Department A">Department A</option>
+                    <option value="Department B">Department B</option>
+                    <option value="Department C">Department C</option>
+                </select>
+            </div>
             <div class="form-group"><label>Supervisor</label><input type="text" id="incSupervisor" required></div>
             <div class="form-group"><label>Date</label><input type="date" id="incDate" required></div>
             <div class="form-group"><label>Time</label><input type="time" id="incTime" required></div>
@@ -289,10 +296,6 @@
             <div class="form-group"><label>Immediate Action Taken</label><textarea id="incAction" required></textarea></div>
             <div class="form-group"><label>Root Cause Analysis</label><textarea id="incRootCause" required></textarea></div>
             <div class="form-group"><label>Preventative Measures</label><textarea id="incPreventative" required></textarea></div>
-        </div>
-        <div class="section grid-2">
-            <div class="form-group"><label>Company Policy Involved</label><input type="text" id="incPolicy"></div>
-            <div class="form-group"><label>Corrective Action</label><input type="text" id="incCorrective"></div>
         </div>
         <button type="submit" class="btn" id="incSubmitBtn">Submit Incident Report</button>
     </form>
@@ -486,7 +489,6 @@
         const payload = {
             FormType: "Employee Incident",
             Employee: currentEmployee,
-            JobTitle: document.getElementById('incJobTitle').value,
             Department: document.getElementById('incDepartment').value,
             Supervisor: document.getElementById('incSupervisor').value,
             IncidentDate: document.getElementById('incDate').value,
@@ -497,8 +499,6 @@
             ImmediateAction: document.getElementById('incAction').value,
             RootCause: document.getElementById('incRootCause').value,
             Preventative: document.getElementById('incPreventative').value,
-            Policy: document.getElementById('incPolicy').value,
-            CorrectiveAction: document.getElementById('incCorrective').value,
             PhotoData1: await processImage(document.getElementById('incPhoto1').files[0]),
             PhotoData2: await processImage(document.getElementById('incPhoto2').files[0]),
             PhotoData3: await processImage(document.getElementById('incPhoto3').files[0])
