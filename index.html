@@ -1,120 +1,527 @@
-function doPost(e) {
-  try {
-    const data = e.parameter;
-    const timestamp = new Date();
-    
-    // Create Temporary Google Doc
-    const docName = `SimplyDoors Report - ${data.FormType} - ${data.Employee}`;
-    const doc = DocumentApp.create(docName);
-    const body = doc.getBody();
-    
-    let emailSubject = "";
-    
-    // Build Professional Document Header
-    body.appendParagraph(`SIMPLYDOORS OPERATIONS PORTAL (TEST MODE)`).setHeading(DocumentApp.ParagraphHeading.HEADING1);
-    body.appendParagraph(data.FormType.toUpperCase()).setHeading(DocumentApp.ParagraphHeading.HEADING2);
-    body.appendParagraph(`Report Generated: ${timestamp.toLocaleString()}`);
-    body.appendHorizontalRule();
-    
-    // Inject Data based on Form Type
-    if (data.FormType === "Vehicle Inspection") {
-      emailSubject = `Vehicle Report PDF: ${data.VehicleID} - ${data.Employee}`;
-      
-      body.appendParagraph(`Driver: ${data.Employee}`);
-      body.appendParagraph(`Vehicle: ${data.VehicleID}`);
-      body.appendParagraph(`Odometer: ${data.Odometer}`);
-      body.appendParagraph(`Critical Issue Flagged: ${data.CriticalIssue}`);
-      body.appendParagraph("");
-      body.appendParagraph("Remarks / Problem Report:").setBold(true);
-      body.appendParagraph(data.Remarks);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimplyDoors Operations Portal (TEST)</title>
+    <style>
+        :root {
+            --primary: #0056b3;
+            --background: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --border: #dddddd;
+            --danger: #dc3545;
+            --success: #28a745;
+            --secondary: #6c757d;
+        }
 
-    } else if (data.FormType === "Employee Incident") {
-      emailSubject = `URGENT PDF: Employee Incident - ${data.Employee}`;
-      
-      body.appendParagraph(`Employee: ${data.Employee}`);
-      body.appendParagraph(`Department: ${data.Department}`);
-      body.appendParagraph(`Supervisor: ${data.Supervisor}`);
-      body.appendParagraph(`Date/Time: ${data.IncidentDate} at ${data.IncidentTime}`);
-      body.appendParagraph(`Location: ${data.Location}`);
-      body.appendParagraph("");
-      body.appendParagraph("Description of Incident:").setBold(true);
-      body.appendParagraph(data.Description);
-      body.appendParagraph("");
-      body.appendParagraph("Witnesses:").setBold(true);
-      body.appendParagraph(data.Witnesses);
-      body.appendParagraph("");
-      body.appendParagraph("Immediate Action Taken:").setBold(true);
-      body.appendParagraph(data.ImmediateAction);
-      body.appendParagraph("");
-      body.appendParagraph("Root Cause Analysis:").setBold(true);
-      body.appendParagraph(data.RootCause);
-      body.appendParagraph("");
-      body.appendParagraph("Preventative Measures:").setBold(true);
-      body.appendParagraph(data.Preventative);
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    } else if (data.FormType === "Vehicle Incident") {
-      emailSubject = `URGENT PDF: Vehicle Incident - ${data.VehicleID} (${data.Employee})`;
-      
-      body.appendParagraph(`Driver: ${data.Employee}`);
-      body.appendParagraph(`Vehicle Involved: ${data.VehicleID}`);
-      body.appendParagraph(`Date/Time: ${data.IncidentDate} at ${data.IncidentTime}`);
-      body.appendParagraph(`Location: ${data.Location}`);
-      body.appendParagraph(`Police Report Filed: ${data.PoliceReport}`);
-      body.appendParagraph(`Other Vehicle/Property Involved: ${data.OtherVehicle}`);
-      body.appendParagraph("");
-      body.appendParagraph("Detailed Description of Incident/Damage:").setBold(true);
-      body.appendParagraph(data.Description);
-    }
-    
-    // Process up to 3 Images and append to Document
-    const photoKeys = [data.PhotoData1, data.PhotoData2, data.PhotoData3];
-    let hasPhotos = false;
-    
-    for (let i = 0; i < 3; i++) {
-      if (photoKeys[i] && photoKeys[i].length > 0) {
-        if (!hasPhotos) {
-          body.appendPageBreak();
-          body.appendParagraph("Attached Photographs").setHeading(DocumentApp.ParagraphHeading.HEADING3);
-          hasPhotos = true;
+        body {
+            background-color: var(--background);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .header-controls h1 {
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #fafafa;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+        .form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+
+        label { font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; }
+        
+        .help-text { font-size: 0.8rem; color: var(--secondary); margin-bottom: 8px; font-style: italic; }
+
+        input[type="text"], input[type="password"], input[type="number"], input[type="date"], input[type="time"], select, textarea {
+            padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem; width: 100%;
         }
         
-        const decoded = Utilities.base64Decode(photoKeys[i]);
-        const blob = Utilities.newBlob(decoded, 'image/jpeg', `Photo_${i + 1}.jpg`);
-        
-        const img = body.appendImage(blob);
-        
-        // Scale image proportionally to fit Google Doc margins safely (max ~500px width)
-        const originalWidth = img.getWidth();
-        if (originalWidth > 500) {
-          const ratio = 500 / originalWidth;
-          img.setWidth(500);
-          img.setHeight(img.getHeight() * ratio);
+        input[type="file"] {
+            padding: 10px; border: 1px dashed var(--primary); border-radius: 4px; font-size: 1rem; width: 100%; background: #eef5fb; cursor: pointer; margin-bottom: 10px;
         }
-        body.appendParagraph("");
-      }
+
+        textarea { resize: vertical; min-height: 100px; }
+
+        .checklist-group { display: flex; flex-direction: column; gap: 10px; }
+
+        .checklist-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px; background: #fff; border: 1px solid var(--border); border-radius: 4px;
+        }
+
+        .radio-group { display: flex; gap: 15px; }
+        .radio-group label { font-weight: normal; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+
+        .btn {
+            background-color: var(--primary); color: #fff; border: none; padding: 15px 30px;
+            font-size: 1.1rem; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; transition: background 0.3s;
+        }
+
+        .btn:hover { background-color: #004494; }
+        .btn:disabled { background-color: #a0c4e8; cursor: not-allowed; }
+        
+        .btn-secondary { background-color: var(--secondary); width: auto; padding: 10px 20px; font-size: 0.9rem; }
+        .btn-secondary:hover { background-color: #5a6268; }
+
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 20px; }
+
+        .dashboard-card {
+            background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 30px;
+            text-align: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .dashboard-card:hover { transform: translateY(-5px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); border-color: var(--primary); }
+
+        .hidden { display: none !important; }
+        .timestamp-display { font-weight: bold; color: var(--primary); }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3, .dashboard-grid { grid-template-columns: 1fr; }
+            .checklist-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .radio-group { width: 100%; justify-content: flex-start; padding-top: 10px; border-top: 1px dashed var(--border); }
+            .header-controls { flex-direction: column; gap: 15px; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN VIEW -->
+<div class="container" id="loginView">
+    <h1>SimplyDoors Operations Portal (TEST)</h1>
+    <div class="section">
+        <h2>Team Sign In</h2>
+        <div class="form-group">
+            <label for="employeeName">Select Employee</label>
+            <select id="employeeName" required>
+                <option value="" disabled selected>Select your name...</option>
+                <option value="Bill Smith">Bill Smith</option>
+                <option value="Bob Benson">Bob Benson</option>
+                <option value="Brian">Brian</option>
+                <option value="Billy">Billy</option>
+            </select>
+        </div>
+        <div class="form-group" id="passwordGroup">
+            <label for="employeePassword">Password / PIN</label>
+            <input type="password" id="employeePassword" placeholder="Enter your password">
+            <div class="help-text">If this is your first time logging in on this device, entering a password will save it for future use.</div>
+        </div>
+        <button class="btn" onclick="startSession()">Access Portal</button>
+    </div>
+</div>
+
+<!-- DASHBOARD VIEW -->
+<div class="container hidden" id="dashboardView">
+    <div class="header-controls">
+        <h1>Select Module</h1>
+        <span class="timestamp-display" id="dashTimestamp"></span>
+    </div>
+    <div class="dashboard-grid">
+        <div class="dashboard-card" onclick="showForm('vehicleView')">
+            <h3>Vehicle Inspection</h3>
+            <p>Complete routine pre-trip and post-trip evaluations.</p>
+        </div>
+        <div class="dashboard-card" onclick="showForm('incidentView')">
+            <h3>Employee Incident</h3>
+            <p>Document workplace accidents, injuries, or safety concerns.</p>
+        </div>
+        <div class="dashboard-card" onclick="showForm('vehicleIncidentView')">
+            <h3>Vehicle Incident</h3>
+            <p>Report vehicle damage, collisions, or roadside emergencies.</p>
+        </div>
+    </div>
+</div>
+
+<!-- VEHICLE INSPECTION FORM -->
+<div class="container hidden" id="vehicleView">
+    <div class="header-controls">
+        <h1>Vehicle Inspection Report</h1>
+        <button class="btn btn-secondary" onclick="returnToDashboard()">Back to Dashboard</button>
+    </div>
+    <form id="inspectionForm" onsubmit="submitVehicleForm(event)">
+        <div class="section grid-2">
+            <div class="form-group">
+                <label>Report Type</label>
+                <select id="reportType" required>
+                    <option value="" disabled selected>Select Pre or Post Trip...</option>
+                    <option value="Pre-Trip">Pre-Trip Inspection</option>
+                    <option value="Post-Trip">Post-Trip Inspection</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Timestamp</label><div class="timestamp-display" id="vehTimestampDisplay"></div><input type="hidden" id="vehTimestampData"></div>
+        </div>
+        <div class="section grid-2">
+            <div class="form-group">
+                <label for="vehicleId">Vehicle Selection</label>
+                <select id="vehicleId" required>
+                    <option value="" disabled selected>Select a vehicle...</option>
+                    <option value="Truck A">Truck A</option><option value="Truck B">Truck B</option><option value="Truck C">Truck C</option>
+                </select>
+            </div>
+            <div class="form-group"><label for="odometer">Current Odometer</label><input type="number" id="odometer" required></div>
+        </div>
+        <div class="section">
+            <div class="form-group">
+                <label>Attach Photos (Up to 3)</label>
+                <div class="help-text">Take pictures of the vehicle or specific damage.</div>
+                <input type="file" id="vehPhoto1" accept="image/*" capture="environment">
+                <input type="file" id="vehPhoto2" accept="image/*" capture="environment">
+                <input type="file" id="vehPhoto3" accept="image/*" capture="environment">
+            </div>
+        </div>
+        
+        <div class="section grid-3">
+            <div class="checklist-group">
+                <h3>Engine / Fluids</h3>
+                <div class="checklist-item"><span>Fuel Level</span><div class="radio-group"><label><input type="radio" name="eng_0" value="OK" required> OK</label><label><input type="radio" name="eng_0" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Oil Level</span><div class="radio-group"><label><input type="radio" name="eng_1" value="OK" required> OK</label><label><input type="radio" name="eng_1" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Transmission Fluid</span><div class="radio-group"><label><input type="radio" name="eng_2" value="OK" required> OK</label><label><input type="radio" name="eng_2" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Coolant</span><div class="radio-group"><label><input type="radio" name="eng_3" value="OK" required> OK</label><label><input type="radio" name="eng_3" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Leaks Under Vehicle</span><div class="radio-group"><label><input type="radio" name="eng_4" value="OK" required> OK</label><label><input type="radio" name="eng_4" value="Defective" class="critical-flag"> Defective</label></div></div>
+            </div>
+            <div class="checklist-group">
+                <h3>Exterior</h3>
+                <div class="checklist-item"><span>Headlights / Taillights</span><div class="radio-group"><label><input type="radio" name="ext_0" value="OK" required> OK</label><label><input type="radio" name="ext_0" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Turn Signals</span><div class="radio-group"><label><input type="radio" name="ext_1" value="OK" required> OK</label><label><input type="radio" name="ext_1" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Tire Condition</span><div class="radio-group"><label><input type="radio" name="ext_2" value="OK" required> OK</label><label><input type="radio" name="ext_2" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Mirrors</span><div class="radio-group"><label><input type="radio" name="ext_3" value="OK" required> OK</label><label><input type="radio" name="ext_3" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Body Damage</span><div class="radio-group"><label><input type="radio" name="ext_4" value="OK" required> OK</label><label><input type="radio" name="ext_4" value="Defective" class="critical-flag"> Defective</label></div></div>
+            </div>
+            <div class="checklist-group">
+                <h3>Interior</h3>
+                <div class="checklist-item"><span>Brakes / Parking Brake</span><div class="radio-group"><label><input type="radio" name="int_0" value="OK" required> OK</label><label><input type="radio" name="int_0" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Steering</span><div class="radio-group"><label><input type="radio" name="int_1" value="OK" required> OK</label><label><input type="radio" name="int_1" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Horn</span><div class="radio-group"><label><input type="radio" name="int_2" value="OK" required> OK</label><label><input type="radio" name="int_2" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Wipers</span><div class="radio-group"><label><input type="radio" name="int_3" value="OK" required> OK</label><label><input type="radio" name="int_3" value="Defective" class="critical-flag"> Defective</label></div></div>
+                <div class="checklist-item"><span>Seatbelts</span><div class="radio-group"><label><input type="radio" name="int_4" value="OK" required> OK</label><label><input type="radio" name="int_4" value="Defective" class="critical-flag"> Defective</label></div></div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="form-group"><label for="vehRemarks">Remarks / Problem Report (Required if any items are defective)</label><input type="text" id="vehRemarks" placeholder="Describe any issues here..."></div>
+        </div>
+        <button type="submit" class="btn" id="vehSubmitBtn">Submit Vehicle Report</button>
+    </form>
+</div>
+
+<!-- EMPLOYEE INCIDENT FORM -->
+<div class="container hidden" id="incidentView">
+    <div class="header-controls">
+        <h1>Employee Incident Report</h1>
+        <button class="btn btn-secondary" onclick="returnToDashboard()">Back to Dashboard</button>
+    </div>
+    <form id="incidentForm" onsubmit="submitEmployeeIncidentForm(event)">
+        <div class="section grid-3">
+            <div class="form-group"><label>Employee Name</label><input type="text" id="incName" required readonly></div>
+            <div class="form-group">
+                <label>Department</label>
+                <select id="incDepartment" required>
+                    <option value="" disabled selected>Select department...</option>
+                    <option value="Department A">Department A</option>
+                    <option value="Department B">Department B</option>
+                    <option value="Department C">Department C</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Supervisor</label><input type="text" id="incSupervisor" required></div>
+            <div class="form-group"><label>Date</label><input type="date" id="incDate" required></div>
+            <div class="form-group"><label>Time</label><input type="time" id="incTime" required></div>
+            <div class="form-group full-width"><label>Location</label><input type="text" id="incLocation" required></div>
+        </div>
+        <div class="section">
+            <div class="form-group"><label>Description of Incident</label><textarea id="incDescription" required></textarea></div>
+        </div>
+        <div class="section">
+            <div class="form-group">
+                <label>Attach Photos (Up to 3)</label>
+                <div class="help-text">Take pictures of the hazard or environment.</div>
+                <input type="file" id="incPhoto1" accept="image/*" capture="environment">
+                <input type="file" id="incPhoto2" accept="image/*" capture="environment">
+                <input type="file" id="incPhoto3" accept="image/*" capture="environment">
+            </div>
+        </div>
+        <div class="section grid-3">
+            <div class="form-group full-width" style="margin-bottom: 0;"><label>Witnesses</label></div>
+            <div class="form-group"><input type="text" id="incWitness1" placeholder="Name 1"></div>
+            <div class="form-group"><input type="text" id="incWitness2" placeholder="Name 2"></div>
+            <div class="form-group"><input type="text" id="incWitness3" placeholder="Name 3"></div>
+        </div>
+        <div class="section">
+            <div class="form-group"><label>Immediate Action Taken</label><textarea id="incAction" required></textarea></div>
+            <div class="form-group"><label>Root Cause Analysis</label><textarea id="incRootCause" required></textarea></div>
+            <div class="form-group"><label>Preventative Measures</label><textarea id="incPreventative" required></textarea></div>
+        </div>
+        <button type="submit" class="btn" id="incSubmitBtn">Submit Incident Report</button>
+    </form>
+</div>
+
+<!-- VEHICLE INCIDENT FORM -->
+<div class="container hidden" id="vehicleIncidentView">
+    <div class="header-controls">
+        <h1>Vehicle Incident Report</h1>
+        <button class="btn btn-secondary" onclick="returnToDashboard()">Back to Dashboard</button>
+    </div>
+    <form id="vehicleIncidentForm" onsubmit="submitVehicleIncidentForm(event)">
+        <div class="section grid-3">
+            <div class="form-group"><label>Driver Name</label><input type="text" id="vincName" required readonly></div>
+            <div class="form-group">
+                <label for="vincVehicleId">Vehicle Involved</label>
+                <select id="vincVehicleId" required>
+                    <option value="" disabled selected>Select a vehicle...</option>
+                    <option value="Truck A">Truck A</option><option value="Truck B">Truck B</option><option value="Truck C">Truck C</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Date of Incident</label><input type="date" id="vincDate" required></div>
+            <div class="form-group"><label>Time of Incident</label><input type="time" id="vincTime" required></div>
+            <div class="form-group full-width"><label>Exact Location</label><input type="text" id="vincLocation" required></div>
+        </div>
+        <div class="section grid-2">
+            <div class="form-group">
+                <label>Police Report Filed?</label>
+                <select id="vincPolice" required>
+                    <option value="No">No</option><option value="Yes">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Other Vehicle/Property Involved?</label>
+                <select id="vincOther" required>
+                    <option value="No">No</option><option value="Yes">Yes</option>
+                </select>
+            </div>
+        </div>
+        <div class="section">
+            <div class="form-group"><label>Detailed Description of Incident / Damage</label><textarea id="vincDescription" required></textarea></div>
+        </div>
+        <div class="section">
+            <div class="form-group">
+                <label>Attach Photos of Damage (Up to 3)</label>
+                <div class="help-text">Take wide shots of the vehicle and close-ups of the damage.</div>
+                <input type="file" id="vincPhoto1" accept="image/*" capture="environment">
+                <input type="file" id="vincPhoto2" accept="image/*" capture="environment">
+                <input type="file" id="vincPhoto3" accept="image/*" capture="environment">
+            </div>
+        </div>
+        <button type="submit" class="btn" id="vincSubmitBtn">Submit Vehicle Incident</button>
+    </form>
+</div>
+
+<script>
+    // PLACE YOUR NEW TEST WEB APP URL HERE AFTER DEPLOYING THE SCRIPT BELOW
+    const GOOGLE_SCRIPT_URL = "REPLACE_WITH_YOUR_NEW_TEST_URL";
+    
+    let currentEmployee = "";
+
+    function startSession() {
+        const nameSelect = document.getElementById('employeeName').value;
+        const passwordInput = document.getElementById('employeePassword').value;
+
+        if (!nameSelect) { alert("Please select your name."); return; }
+        if (!passwordInput) { alert("Please enter your password."); return; }
+
+        const storageKey = `pwd_${nameSelect.replace(/\s+/g, '')}`;
+        const savedPassword = localStorage.getItem(storageKey);
+
+        if (savedPassword) {
+            if (savedPassword !== passwordInput) {
+                alert("Incorrect password for this user.");
+                return;
+            }
+        } else {
+            localStorage.setItem(storageKey, passwordInput);
+            alert(`Password saved for ${nameSelect} on this device.`);
+        }
+
+        currentEmployee = nameSelect;
+        document.getElementById('loginView').classList.add('hidden');
+        document.getElementById('dashboardView').classList.remove('hidden');
+        document.getElementById('dashTimestamp').innerText = new Date().toLocaleString();
+        document.getElementById('employeePassword').value = ""; 
+    }
+
+    function showForm(viewId) {
+        document.getElementById('dashboardView').classList.add('hidden');
+        document.getElementById(viewId).classList.remove('hidden');
+        
+        if (viewId === 'vehicleView') {
+            const now = new Date().toLocaleString();
+            document.getElementById('vehTimestampDisplay').innerText = now;
+            document.getElementById('vehTimestampData').value = now;
+        } else if (viewId === 'incidentView') {
+            document.getElementById('incName').value = currentEmployee;
+        } else if (viewId === 'vehicleIncidentView') {
+            document.getElementById('vincName').value = currentEmployee;
+        }
+    }
+
+    function returnToDashboard() {
+        document.getElementById('vehicleView').classList.add('hidden');
+        document.getElementById('incidentView').classList.add('hidden');
+        document.getElementById('vehicleIncidentView').classList.add('hidden');
+        document.getElementById('dashboardView').classList.remove('hidden');
+    }
+
+    async function processImage(file) {
+        return new Promise((resolve) => {
+            if (!file) { resolve(""); return; }
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800;
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.7).split(',')[1]); 
+                }
+            };
+        });
+    }
+
+    async function sendToGoogle(payload, btnElement, formElement) {
+        const originalText = btnElement.innerText;
+        btnElement.innerText = "Transmitting...";
+        btnElement.disabled = true;
+
+        const formData = new FormData();
+        for (const key in payload) {
+            formData.append(key, payload[key]);
+        }
+
+        try {
+            await fetch(GOOGLE_SCRIPT_URL, { 
+                method: 'POST', 
+                body: formData,
+                mode: 'no-cors' 
+            });
+            
+            alert("Report successfully submitted.");
+            formElement.reset();
+            returnToDashboard();
+            
+        } catch (error) {
+            console.error('Transmission Error:', error);
+            alert("Transmission failed. Please check your internet connection.");
+        } finally {
+            btnElement.innerText = originalText;
+            btnElement.disabled = false;
+        }
+    }
+
+    async function submitVehicleForm(event) {
+        event.preventDefault();
+        const criticalFlags = document.querySelectorAll('#vehicleView .critical-flag:checked');
+        const hasCriticalIssue = criticalFlags.length > 0;
+        const remarks = document.getElementById('vehRemarks').value.trim();
+
+        if (hasCriticalIssue && remarks === "") {
+            alert("You marked items as Defective. You must provide a description in the Remarks.");
+            return;
+        }
+
+        const payload = {
+            FormType: "Vehicle Inspection",
+            Employee: currentEmployee,
+            Timestamp: document.getElementById('vehTimestampData').value,
+            VehicleID: document.getElementById('vehicleId').value,
+            Odometer: document.getElementById('odometer').value,
+            CriticalIssue: hasCriticalIssue ? "YES" : "NO",
+            Remarks: remarks || "None",
+            PhotoData1: await processImage(document.getElementById('vehPhoto1').files[0]),
+            PhotoData2: await processImage(document.getElementById('vehPhoto2').files[0]),
+            PhotoData3: await processImage(document.getElementById('vehPhoto3').files[0])
+        };
+
+        sendToGoogle(payload, document.getElementById('vehSubmitBtn'), document.getElementById('inspectionForm'));
+    }
+
+    async function submitEmployeeIncidentForm(event) {
+        event.preventDefault();
+        const payload = {
+            FormType: "Employee Incident",
+            Employee: currentEmployee,
+            Department: document.getElementById('incDepartment').value,
+            Supervisor: document.getElementById('incSupervisor').value,
+            IncidentDate: document.getElementById('incDate').value,
+            IncidentTime: document.getElementById('incTime').value,
+            Location: document.getElementById('incLocation').value,
+            Description: document.getElementById('incDescription').value,
+            Witnesses: `${document.getElementById('incWitness1').value}, ${document.getElementById('incWitness2').value}, ${document.getElementById('incWitness3').value}`,
+            ImmediateAction: document.getElementById('incAction').value,
+            RootCause: document.getElementById('incRootCause').value,
+            Preventative: document.getElementById('incPreventative').value,
+            PhotoData1: await processImage(document.getElementById('incPhoto1').files[0]),
+            PhotoData2: await processImage(document.getElementById('incPhoto2').files[0]),
+            PhotoData3: await processImage(document.getElementById('incPhoto3').files[0])
+        };
+        sendToGoogle(payload, document.getElementById('incSubmitBtn'), document.getElementById('incidentForm'));
     }
     
-    // Finalize Document and Convert to PDF
-    doc.saveAndClose();
-    const pdfBlob = DriveApp.getFileById(doc.getId()).getAs('application/pdf');
-    pdfBlob.setName(`${data.FormType.replace(" ", "_")}_${data.Employee.replace(" ", "_")}.pdf`);
-    
-    // Core Email Routing Logic - RESTRICTED TO ADEM ONLY FOR TESTING
-    let recipient = "adem@simplydoors.com";
-    
-    MailApp.sendEmail({
-      to: recipient,
-      subject: "[TEST] " + emailSubject,
-      body: "This is a test submission. Please see the attached PDF for the full report.",
-      attachments: [pdfBlob]
-    });
-    
-    // Trash the temporary Google Doc to keep Drive clean
-    DriveApp.getFileById(doc.getId()).setTrashed(true);
-    
-    return ContentService.createTextOutput(JSON.stringify({ "result": "success" })).setMimeType(ContentService.MimeType.JSON);
-    
-  } catch (error) {
-    return ContentService.createTextOutput(JSON.stringify({ "result": "error", "error": error.toString() })).setMimeType(ContentService.MimeType.JSON);
-  }
-}
+    async function submitVehicleIncidentForm(event) {
+        event.preventDefault();
+        const payload = {
+            FormType: "Vehicle Incident",
+            Employee: currentEmployee,
+            VehicleID: document.getElementById('vincVehicleId').value,
+            IncidentDate: document.getElementById('vincDate').value,
+            IncidentTime: document.getElementById('vincTime').value,
+            Location: document.getElementById('vincLocation').value,
+            PoliceReport: document.getElementById('vincPolice').value,
+            OtherVehicle: document.getElementById('vincOther').value,
+            Description: document.getElementById('vincDescription').value,
+            PhotoData1: await processImage(document.getElementById('vincPhoto1').files[0]),
+            PhotoData2: await processImage(document.getElementById('vincPhoto2').files[0]),
+            PhotoData3: await processImage(document.getElementById('vincPhoto3').files[0])
+        };
+        sendToGoogle(payload, document.getElementById('vincSubmitBtn'), document.getElementById('vehicleIncidentForm'));
+    }
+</script>
+</body>
+</html>
