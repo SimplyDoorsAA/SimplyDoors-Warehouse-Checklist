@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SimplyDoors Operations Portal (TEST)</title>
+    <title>SimplyDoors Operations Portal</title>
     <style>
         :root {
-            --primary: #0056b3;
+            --primary: #76c043;
+            --primary-dark: #5a9930;
             --background: #f4f7f6;
             --card-bg: #ffffff;
             --text-main: #333333;
@@ -38,9 +39,15 @@
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
+        
+        .brand-logo {
+            max-width: 250px;
+            display: block;
+            margin: 0 auto 20px auto;
+        }
 
         h1, h2, h3 {
-            color: var(--primary);
+            color: var(--text-main);
             border-bottom: 2px solid var(--primary);
             padding-bottom: 10px;
             margin-bottom: 20px;
@@ -84,7 +91,7 @@
         }
         
         input[type="file"] {
-            padding: 10px; border: 1px dashed var(--primary); border-radius: 4px; font-size: 1rem; width: 100%; background: #eef5fb; cursor: pointer; margin-bottom: 10px;
+            padding: 10px; border: 1px dashed var(--primary); border-radius: 4px; font-size: 1rem; width: 100%; background: #f2f9eb; cursor: pointer; margin-bottom: 10px;
         }
 
         textarea { resize: vertical; min-height: 100px; }
@@ -104,8 +111,8 @@
             font-size: 1.1rem; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; transition: background 0.3s;
         }
 
-        .btn:hover { background-color: #004494; }
-        .btn:disabled { background-color: #a0c4e8; cursor: not-allowed; }
+        .btn:hover { background-color: var(--primary-dark); }
+        .btn:disabled { background-color: #a3d982; cursor: not-allowed; }
         
         .btn-secondary { background-color: var(--secondary); width: auto; padding: 10px 20px; font-size: 0.9rem; }
         .btn-secondary:hover { background-color: #5a6268; }
@@ -131,8 +138,10 @@
 </head>
 <body>
 
+<!-- LOGIN VIEW -->
 <div class="container" id="loginView">
-    <h1>SimplyDoors Operations Portal (TEST)</h1>
+    <img src="https://raw.githubusercontent.com/SimplyDoorsAA/SimplyDoors-Warehouse-Checklist/main/Simply%20doors%20logo3.png" alt="SimplyDoors Logo" class="brand-logo" onerror="this.style.display='none'">
+    <h1 style="text-align: center; border: none;">Operations Portal</h1>
     <div class="section">
         <h2>Team Sign In</h2>
         <div class="form-group">
@@ -154,7 +163,9 @@
     </div>
 </div>
 
+<!-- DASHBOARD VIEW -->
 <div class="container hidden" id="dashboardView">
+    <img src="https://raw.githubusercontent.com/SimplyDoorsAA/SimplyDoors-Warehouse-Checklist/main/Simply%20doors%20logo3.png" alt="SimplyDoors Logo" class="brand-logo" style="max-width: 150px; margin-bottom: 10px;" onerror="this.style.display='none'">
     <div class="header-controls">
         <h1>Select Module</h1>
         <span class="timestamp-display" id="dashTimestamp"></span>
@@ -175,6 +186,7 @@
     </div>
 </div>
 
+<!-- VEHICLE INSPECTION FORM -->
 <div class="container hidden" id="vehicleView">
     <div class="header-controls">
         <h1>Vehicle Inspection Report</h1>
@@ -245,6 +257,7 @@
     </form>
 </div>
 
+<!-- EMPLOYEE INCIDENT FORM -->
 <div class="container hidden" id="incidentView">
     <div class="header-controls">
         <h1>Employee Incident Report</h1>
@@ -294,6 +307,7 @@
     </form>
 </div>
 
+<!-- VEHICLE INCIDENT FORM -->
 <div class="container hidden" id="vehicleIncidentView">
     <div class="header-controls">
         <h1>Vehicle Incident Report</h1>
