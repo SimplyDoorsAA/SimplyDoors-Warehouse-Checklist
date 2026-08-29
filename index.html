@@ -179,6 +179,10 @@
             <h3>Vehicle Inspection</h3>
             <p>Complete routine pre-trip and post-trip evaluations.</p>
         </div>
+        <div class="dashboard-card" onclick="showForm('receivingView')">
+            <h3>Receiving Report</h3>
+            <p>Document incoming deliveries, capture receiving tickets, and verify product condition.</p>
+        </div>
         <div class="dashboard-card" onclick="showForm('incidentView')">
             <h3>Employee Incident</h3>
             <p>Document workplace accidents, injuries, or safety concerns.</p>
@@ -194,62 +198,57 @@
     </div>
 </div>
 
-<!-- DISCIPLINARY ACTION FORM (RESTRICTED) -->
-<div class="container hidden" id="disciplinaryView">
+<!-- RECEIVING REPORT FORM -->
+<div class="container hidden" id="receivingView">
     <div class="header-controls">
-        <h1 style="color: var(--danger); border-bottom-color: var(--danger);">Employee Disciplinary Action</h1>
+        <h1>Receiving Report</h1>
         <button class="btn btn-secondary" onclick="returnToDashboard()">Back to Dashboard</button>
     </div>
-    <form id="disciplinaryForm" onsubmit="submitDisciplinaryForm(event)">
+    <form id="receivingForm" onsubmit="submitReceivingForm(event)">
         <div class="section grid-2">
-            <div class="form-group">
-                <label>Manager Name</label>
-                <input type="text" id="discManagerName" required readonly>
-            </div>
-            <div class="form-group">
-                <label>Target Employee</label>
-                <select id="discEmployeeTarget" required>
-                    <option value="" disabled selected>Select employee to write up...</option>
-                    <option value="Bill Smith">Bill Smith</option>
-                    <option value="Bob Benson">Bob Benson</option>
-                    <option value="Brian">Brian</option>
-                    <option value="Billy">Billy</option>
+            <div class="form-group"><label>Timestamp</label><div class="timestamp-display" id="recvTimestampDisplay"></div><input type="hidden" id="recvTimestampData"></div>
+            <div class="form-group"><label>Receiver Name</label><input type="text" id="recvName" required readonly></div>
+            <div class="form-group"><label>Job / Purchase Order Number</label><input type="text" id="recvPO" placeholder="Enter PO or Job Number" required></div>
+            <div class="form-group"><label>Customer's Name</label><input type="text" id="recvCustomer" placeholder="Enter Customer Name" required></div>
+            
+            <div class="form-group full-width">
+                <label>Receiving Location</label>
+                <select id="recvLocationDrop" onchange="handleLocationChange()" required>
+                    <option value="" disabled selected>Select delivery location...</option>
+                    <option value="Location A">Location A</option>
+                    <option value="Location B">Location B</option>
+                    <option value="Location C">Location C</option>
+                    <option value="Location D">Location D</option>
+                    <option value="Custom">Custom (Type below)</option>
                 </select>
+                <input type="text" id="recvLocationCustom" class="hidden" placeholder="Enter custom location details..." style="margin-top: 10px;">
             </div>
-            <div class="form-group">
-                <label>Warning Level</label>
-                <select id="discWarningLevel" required>
-                    <option value="" disabled selected>Select severity...</option>
-                    <option value="Verbal Warning (Documented)">Verbal Warning (Documented)</option>
-                    <option value="First Written Warning">First Written Warning</option>
-                    <option value="Final Written Warning">Final Written Warning</option>
-                    <option value="Suspension">Suspension</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Nature of Infraction</label>
-                <select id="discInfraction" required>
-                    <option value="" disabled selected>Select category...</option>
-                    <option value="Tardiness / Absenteeism">Tardiness / Absenteeism</option>
-                    <option value="Safety Violation">Safety Violation</option>
-                    <option value="Poor Work Quality / Performance">Poor Work Quality / Performance</option>
-                    <option value="Insubordination">Insubordination</option>
-                    <option value="Damage to Company Property">Damage to Company Property</option>
-                    <option value="Policy Violation (Other)">Policy Violation (Other)</option>
-                </select>
-            </div>
-            <div class="form-group"><label>Date of Incident</label><input type="date" id="discDate" required></div>
-            <div class="form-group"><label>Time of Incident</label><input type="time" id="discTime" required></div>
         </div>
+
         <div class="section">
-            <div class="form-group"><label>Detailed Description of the Event</label><textarea id="discDescription" placeholder="State exactly what occurred..." required></textarea></div>
-            <div class="form-group"><label>Prior Warnings (If Applicable)</label><textarea id="discPriorWarnings" placeholder="List dates and context of previous discussions regarding this behavior..." required></textarea></div>
+            <h3>1. Receiving Documentation</h3>
+            <div class="form-group">
+                <div class="help-text">Capture clear photos of the Bill of Lading, Packing Slips, or Delivery Tickets.</div>
+                <input type="file" id="recvTicket1" accept="image/*" capture="environment">
+                <input type="file" id="recvTicket2" accept="image/*" capture="environment">
+                <input type="file" id="recvTicket3" accept="image/*" capture="environment">
+            </div>
         </div>
+
         <div class="section">
-            <div class="form-group"><label>Corrective Action Plan</label><textarea id="discActionPlan" placeholder="What specific steps must the employee take to improve?" required></textarea></div>
-            <div class="form-group"><label>Consequences of Failure to Improve</label><textarea id="discConsequences" required>Further violations of company policy or failure to meet the outlined performance expectations will result in further disciplinary action, up to and including termination of employment.</textarea></div>
+            <h3>2. Product Verification</h3>
+            <div class="form-group">
+                <div class="help-text">Capture photos of the physical product to document its received condition.</div>
+                <input type="file" id="recvProduct1" accept="image/*" capture="environment">
+                <input type="file" id="recvProduct2" accept="image/*" capture="environment">
+            </div>
+            <div class="form-group" style="margin-top: 15px;">
+                <label>Remarks / Notes</label>
+                <textarea id="recvRemarks" placeholder="Note any missing items, crushed boxes, or exceptions before signing off..."></textarea>
+            </div>
         </div>
-        <button type="submit" class="btn btn-danger" id="discSubmitBtn">Submit Disciplinary Report</button>
+
+        <button type="submit" class="btn" id="recvSubmitBtn">Submit Receiving Report</button>
     </form>
 </div>
 
@@ -260,7 +259,7 @@
         <button class="btn btn-secondary" onclick="returnToDashboard()">Back to Dashboard</button>
     </div>
     <form id="inspectionForm" onsubmit="submitVehicleForm(event)">
-        <!-- (Existing Vehicle HTML Omitted for brevity in instruction, but keep your current vehicle grid here) -->
+        <!-- (Existing Vehicle HTML) -->
         <div class="section grid-2">
             <div class="form-group">
                 <label>Report Type</label>
@@ -427,6 +426,66 @@
     </form>
 </div>
 
+<!-- DISCIPLINARY ACTION FORM (RESTRICTED) -->
+<div class="container hidden" id="disciplinaryView">
+    <div class="header-controls">
+        <h1 style="color: var(--danger); border-bottom-color: var(--danger);">Employee Disciplinary Action</h1>
+        <button class="btn btn-secondary" onclick="returnToDashboard()">Back to Dashboard</button>
+    </div>
+    <form id="disciplinaryForm" onsubmit="submitDisciplinaryForm(event)">
+        <!-- (Existing Disciplinary HTML) -->
+        <div class="section grid-2">
+            <div class="form-group">
+                <label>Manager Name</label>
+                <input type="text" id="discManagerName" required readonly>
+            </div>
+            <div class="form-group">
+                <label>Target Employee</label>
+                <select id="discEmployeeTarget" required>
+                    <option value="" disabled selected>Select employee to write up...</option>
+                    <option value="Bill Smith">Bill Smith</option>
+                    <option value="Bob Benson">Bob Benson</option>
+                    <option value="Brian">Brian</option>
+                    <option value="Billy">Billy</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Warning Level</label>
+                <select id="discWarningLevel" required>
+                    <option value="" disabled selected>Select severity...</option>
+                    <option value="Verbal Warning (Documented)">Verbal Warning (Documented)</option>
+                    <option value="First Written Warning">First Written Warning</option>
+                    <option value="Final Written Warning">Final Written Warning</option>
+                    <option value="Suspension">Suspension</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Nature of Infraction</label>
+                <select id="discInfraction" required>
+                    <option value="" disabled selected>Select category...</option>
+                    <option value="Tardiness / Absenteeism">Tardiness / Absenteeism</option>
+                    <option value="Safety Violation">Safety Violation</option>
+                    <option value="Poor Work Quality / Performance">Poor Work Quality / Performance</option>
+                    <option value="Insubordination">Insubordination</option>
+                    <option value="Damage to Company Property">Damage to Company Property</option>
+                    <option value="Policy Violation (Other)">Policy Violation (Other)</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Date of Incident</label><input type="date" id="discDate" required></div>
+            <div class="form-group"><label>Time of Incident</label><input type="time" id="discTime" required></div>
+        </div>
+        <div class="section">
+            <div class="form-group"><label>Detailed Description of the Event</label><textarea id="discDescription" placeholder="State exactly what occurred..." required></textarea></div>
+            <div class="form-group"><label>Prior Warnings (If Applicable)</label><textarea id="discPriorWarnings" placeholder="List dates and context of previous discussions regarding this behavior..." required></textarea></div>
+        </div>
+        <div class="section">
+            <div class="form-group"><label>Corrective Action Plan</label><textarea id="discActionPlan" placeholder="What specific steps must the employee take to improve?" required></textarea></div>
+            <div class="form-group"><label>Consequences of Failure to Improve</label><textarea id="discConsequences" required>Further violations of company policy or failure to meet the outlined performance expectations will result in further disciplinary action, up to and including termination of employment.</textarea></div>
+        </div>
+        <button type="submit" class="btn btn-danger" id="discSubmitBtn">Submit Disciplinary Report</button>
+    </form>
+</div>
+
 <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxKjblgrk5yadRUlkybpYVxhL--ogt_87xxHEG-swcCItVOFoErZL5k6DNhvfcHQiAr/exec";
     
@@ -459,8 +518,19 @@
         document.getElementById('employeePassword').value = ""; 
     }
 
+    function handleLocationChange() {
+        const dropdown = document.getElementById('recvLocationDrop');
+        const customInput = document.getElementById('recvLocationCustom');
+        if (dropdown.value === 'Custom') {
+            customInput.classList.remove('hidden');
+            customInput.setAttribute('required', 'true');
+        } else {
+            customInput.classList.add('hidden');
+            customInput.removeAttribute('required');
+        }
+    }
+
     function showForm(viewId) {
-        // SECURITY GATE FOR DISCIPLINARY MODULE
         if (viewId === 'disciplinaryView') {
             if (currentEmployee !== "Bill Smith") {
                 alert("Unauthorized: You do not have managerial permissions to access this module.");
@@ -472,10 +542,15 @@
         document.getElementById('dashboardView').classList.add('hidden');
         document.getElementById(viewId).classList.remove('hidden');
         
+        const now = new Date().toLocaleString();
+        
         if (viewId === 'vehicleView') {
-            const now = new Date().toLocaleString();
             document.getElementById('vehTimestampDisplay').innerText = now;
             document.getElementById('vehTimestampData').value = now;
+        } else if (viewId === 'receivingView') {
+            document.getElementById('recvTimestampDisplay').innerText = now;
+            document.getElementById('recvTimestampData').value = now;
+            document.getElementById('recvName').value = currentEmployee;
         } else if (viewId === 'incidentView') {
             document.getElementById('incName').value = currentEmployee;
         } else if (viewId === 'vehicleIncidentView') {
@@ -485,6 +560,7 @@
 
     function returnToDashboard() {
         document.getElementById('vehicleView').classList.add('hidden');
+        document.getElementById('receivingView').classList.add('hidden');
         document.getElementById('incidentView').classList.add('hidden');
         document.getElementById('vehicleIncidentView').classList.add('hidden');
         document.getElementById('disciplinaryView').classList.add('hidden');
@@ -543,6 +619,31 @@
         }
     }
 
+    async function submitReceivingForm(event) {
+        event.preventDefault();
+        
+        let finalLocation = document.getElementById('recvLocationDrop').value;
+        if (finalLocation === 'Custom') {
+            finalLocation = document.getElementById('recvLocationCustom').value;
+        }
+
+        const payload = {
+            FormType: "Receiving Report",
+            Employee: currentEmployee,
+            Timestamp: document.getElementById('recvTimestampData').value,
+            PONumber: document.getElementById('recvPO').value,
+            CustomerName: document.getElementById('recvCustomer').value,
+            Location: finalLocation,
+            Remarks: document.getElementById('recvRemarks').value || "None",
+            TicketPhoto1: await processImage(document.getElementById('recvTicket1').files[0]),
+            TicketPhoto2: await processImage(document.getElementById('recvTicket2').files[0]),
+            TicketPhoto3: await processImage(document.getElementById('recvTicket3').files[0]),
+            ProductPhoto1: await processImage(document.getElementById('recvProduct1').files[0]),
+            ProductPhoto2: await processImage(document.getElementById('recvProduct2').files[0])
+        };
+        sendToGoogle(payload, document.getElementById('recvSubmitBtn'), document.getElementById('receivingForm'));
+    }
+
     async function submitVehicleForm(event) {
         event.preventDefault();
         const criticalFlags = document.querySelectorAll('#vehicleView .critical-flag:checked');
@@ -566,7 +667,6 @@
             PhotoData2: await processImage(document.getElementById('vehPhoto2').files[0]),
             PhotoData3: await processImage(document.getElementById('vehPhoto3').files[0])
         };
-
         sendToGoogle(payload, document.getElementById('vehSubmitBtn'), document.getElementById('inspectionForm'));
     }
 
@@ -615,7 +715,7 @@
         event.preventDefault();
         const payload = {
             FormType: "Disciplinary Action",
-            Employee: currentEmployee, // The Manager
+            Employee: currentEmployee,
             TargetEmployee: document.getElementById('discEmployeeTarget').value,
             WarningLevel: document.getElementById('discWarningLevel').value,
             Infraction: document.getElementById('discInfraction').value,
