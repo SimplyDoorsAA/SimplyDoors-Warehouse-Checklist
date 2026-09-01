@@ -144,7 +144,6 @@
 </head>
 <body>
 
-<!-- LOGIN VIEW -->
 <div class="container" id="loginView">
     <img src="https://raw.githubusercontent.com/SimplyDoorsAA/SimplyDoors-Warehouse-Checklist/main/Simply%20doors%20logo3.png" alt="SimplyDoors Logo" class="brand-logo" onerror="this.style.display='none'">
     <h1 style="text-align: center; border: none;">Operations Portal</h1>
@@ -154,10 +153,15 @@
             <label for="employeeName">Select Employee</label>
             <select id="employeeName" required>
                 <option value="" disabled selected>Select your name...</option>
-                <option value="Bill Smith">Bill Smith</option>
-                <option value="Bob Benson">Bob Benson</option>
-                <option value="Brian">Brian</option>
-                <option value="Billy">Billy</option>
+                <option value="Jaime Mendoza">Jaime Mendoza</option>
+                <option value="Jose Blanco">Jose Blanco</option>
+                <option value="Jay Bryant">Jay Bryant</option>
+                <option value="Elijah Kimmel">Elijah Kimmel</option>
+                <option value="Ramiro Zuniga">Ramiro Zuniga</option>
+                <option value="Gerardo Zuniga">Gerardo Zuniga</option>
+                <option value="Lupe Sanchez">Lupe Sanchez</option>
+                <option value="Adem Atis">Adem Atis</option>
+                <option value="Admin">Admin</option>
             </select>
         </div>
         <div class="form-group" id="passwordGroup">
@@ -169,7 +173,6 @@
     </div>
 </div>
 
-<!-- DASHBOARD VIEW -->
 <div class="container hidden" id="dashboardView">
     <img src="https://raw.githubusercontent.com/SimplyDoorsAA/SimplyDoors-Warehouse-Checklist/main/Simply%20doors%20logo3.png" alt="SimplyDoors Logo" class="brand-logo" style="max-width: 150px; margin-bottom: 10px;" onerror="this.style.display='none'">
     <div class="header-controls">
@@ -204,7 +207,6 @@
     </div>
 </div>
 
-<!-- END OF SHIFT (EOD) FORM -->
 <div class="container hidden" id="eodView">
     <div class="header-controls">
         <h1>End of Shift Checklist</h1>
@@ -225,29 +227,25 @@
             </div>
         </div>
 
-        <!-- WAREHOUSE CHECKLIST -->
         <div id="eodWarehouseSection" class="hidden">
             <div class="section">
                 <h3>Warehouse Operations Protocol</h3>
                 <div class="checklist-group">
                     <label class="checkbox-label"><input type="checkbox" id="whChk1"> All units and slabs needed for next-day delivery/pickups are completed.</label>
-                    <label class="checkbox-label"><input type="checkbox" id="whChk2"> Shop is cleaned and swept.</label>
+                    <label class="checkbox-label"><input type="checkbox" id="whChk2"> Warehouse is cleaned and swept.</label>
                     <label class="checkbox-label"><input type="checkbox" id="whChk3"> Extra materials are put away. Floor and walls are cleared of leaning trim, doors, and boxes.</label>
-                    <label class="checkbox-label"><input type="checkbox" id="whChk4"> Miter saw and table saw are cleared of leftover materials.</label>
-                    <label class="checkbox-label"><input type="checkbox" id="whChk5"> All tools have been returned to their designated spots.</label>
                 </div>
             </div>
             <div class="section">
                 <h3>Warehouse Photo Verification</h3>
                 <div class="form-group">
-                    <div class="help-text">Capture wide-angle photos of the clean shop floor and cleared equipment.</div>
+                    <div class="help-text">Capture wide-angle photos of the clean warehouse floor.</div>
                     <input type="file" id="eodWhPhoto1" accept="image/*" capture="environment">
                     <input type="file" id="eodWhPhoto2" accept="image/*" capture="environment">
                 </div>
             </div>
         </div>
 
-        <!-- DRIVER CHECKLIST -->
         <div id="eodDriverSection" class="hidden">
             <div class="section">
                 <h3>Driver Operations Protocol</h3>
@@ -267,14 +265,15 @@
             </div>
         </div>
 
-        <!-- PRODUCTION CHECKLIST -->
         <div id="eodProductionSection" class="hidden">
             <div class="section">
                 <h3>Production Operations Protocol</h3>
                 <div class="checklist-group">
-                    <label class="checkbox-label"><input type="checkbox" id="prChk1"> Any tools or materials that are damaged or broken have been reported to the supervisor ASAP.</label>
-                    <label class="checkbox-label"><input type="checkbox" id="prChk2"> Maintenance needs on the Maverick or any other tools have been reported to the supervisor to get fixed.</label>
-                    <label class="checkbox-label"><input type="checkbox" id="prChk3"> Production area is cleaned, swept, and secured for the end of the shift.</label>
+                    <label class="checkbox-label"><input type="checkbox" id="prChk1"> Miter saw and table saw are cleared of leftover materials.</label>
+                    <label class="checkbox-label"><input type="checkbox" id="prChk2"> All tools have been returned to their designated spots.</label>
+                    <label class="checkbox-label"><input type="checkbox" id="prChk3"> Any tools or materials that are damaged or broken have been reported to the supervisor ASAP.</label>
+                    <label class="checkbox-label"><input type="checkbox" id="prChk4"> Maintenance needs on the Maverick or any other tools have been reported to the supervisor to get fixed.</label>
+                    <label class="checkbox-label"><input type="checkbox" id="prChk5"> Production area is cleaned, swept, and secured for the end of the shift.</label>
                 </div>
             </div>
             <div class="section">
@@ -297,7 +296,6 @@
     </form>
 </div>
 
-<!-- RECEIVING REPORT FORM -->
 <div class="container hidden" id="receivingView">
     <div class="header-controls">
         <h1>Receiving Report</h1>
@@ -311,11 +309,10 @@
             <div class="form-group"><label>Customer's Name</label><input type="text" id="recvCustomer" placeholder="Enter Customer Name" required></div>
             
             <div class="form-group">
-                <label>Destination Route</label>
-                <select id="recvDestination" required>
-                    <option value="" disabled selected>Select destination...</option>
-                    <option value="Inventory / Stock">Inventory / Stock</option>
-                    <option value="Production">Production (Will notify team)</option>
+                <label>Notify Sales Representative (Optional)</label>
+                <select id="recvSalesNotify">
+                    <option value="None" selected>None / Do not notify</option>
+                    <option value="Adem@simplydoors.com">Adem Atis</option>
                 </select>
             </div>
 
@@ -369,7 +366,6 @@
     </form>
 </div>
 
-<!-- VEHICLE INSPECTION FORM -->
 <div class="container hidden" id="vehicleView">
     <div class="header-controls">
         <h1>Vehicle Inspection Report</h1>
@@ -440,7 +436,6 @@
     </form>
 </div>
 
-<!-- EMPLOYEE INCIDENT FORM -->
 <div class="container hidden" id="incidentView">
     <div class="header-controls">
         <h1>Employee Incident Report</h1>
@@ -490,7 +485,6 @@
     </form>
 </div>
 
-<!-- VEHICLE INCIDENT FORM -->
 <div class="container hidden" id="vehicleIncidentView">
     <div class="header-controls">
         <h1>Vehicle Incident Report</h1>
@@ -540,7 +534,6 @@
     </form>
 </div>
 
-<!-- DISCIPLINARY ACTION FORM -->
 <div class="container hidden" id="disciplinaryView">
     <div class="header-controls">
         <h1 style="color: var(--danger); border-bottom-color: var(--danger);">Employee Disciplinary Action</h1>
@@ -556,10 +549,15 @@
                 <label>Target Employee</label>
                 <select id="discEmployeeTarget" required>
                     <option value="" disabled selected>Select employee to write up...</option>
-                    <option value="Bill Smith">Bill Smith</option>
-                    <option value="Bob Benson">Bob Benson</option>
-                    <option value="Brian">Brian</option>
-                    <option value="Billy">Billy</option>
+                    <option value="Jaime Mendoza">Jaime Mendoza</option>
+                    <option value="Jose Blanco">Jose Blanco</option>
+                    <option value="Jay Bryant">Jay Bryant</option>
+                    <option value="Elijah Kimmel">Elijah Kimmel</option>
+                    <option value="Ramiro Zuniga">Ramiro Zuniga</option>
+                    <option value="Gerardo Zuniga">Gerardo Zuniga</option>
+                    <option value="Lupe Sanchez">Lupe Sanchez</option>
+                    <option value="Adem Atis">Adem Atis</option>
+                    <option value="Admin">Admin</option>
                 </select>
             </div>
             <div class="form-group">
@@ -643,7 +641,6 @@
         }
     }
 
-    // Toggles required attributes dynamically so HTML5 form validation doesn't block hidden inputs
     function handleEodRoleChange() {
         const role = document.getElementById('eodRole').value;
         const whSection = document.getElementById('eodWarehouseSection');
@@ -676,7 +673,7 @@
 
     function showForm(viewId) {
         if (viewId === 'disciplinaryView') {
-            if (currentEmployee !== "Bill Smith") {
+            if (currentEmployee !== "Lupe Sanchez" && currentEmployee !== "Adem Atis" && currentEmployee !== "Admin") {
                 alert("Unauthorized: You do not have managerial permissions to access this module.");
                 return;
             }
@@ -804,7 +801,7 @@
             Timestamp: document.getElementById('recvTimestampData').value,
             PONumber: document.getElementById('recvPO').value,
             CustomerName: document.getElementById('recvCustomer').value,
-            Destination: document.getElementById('recvDestination').value,
+            SalesNotify: document.getElementById('recvSalesNotify').value,
             Location: finalLocation,
             Remarks: document.getElementById('recvRemarks').value || "None",
             TicketPhoto1: await processImage(document.getElementById('recvTicket1').files[0]),
