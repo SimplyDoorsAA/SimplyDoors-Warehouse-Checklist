@@ -388,7 +388,9 @@
                 <label for="vehicleId">Vehicle Selection</label>
                 <select id="vehicleId" required>
                     <option value="" disabled selected>Select a vehicle...</option>
-                    <option value="Truck A">Truck A</option><option value="Truck B">Truck B</option><option value="Truck C">Truck C</option>
+                    <option value="Sprinter Van">Sprinter Van</option>
+                    <option value="Small Truck">Small Truck</option>
+                    <option value="Big Truck">Big Truck</option>
                 </select>
             </div>
             <div class="form-group"><label for="odometer">Current Odometer</label><input type="number" id="odometer" required></div>
@@ -448,9 +450,9 @@
                 <label>Department</label>
                 <select id="incDepartment" required>
                     <option value="" disabled selected>Select department...</option>
-                    <option value="Department A">Department A</option>
-                    <option value="Department B">Department B</option>
-                    <option value="Department C">Department C</option>
+                    <option value="Warehouse">Warehouse</option>
+                    <option value="Delivery">Delivery</option>
+                    <option value="Production">Production</option>
                 </select>
             </div>
             <div class="form-group"><label>Supervisor</label><input type="text" id="incSupervisor" required></div>
@@ -497,7 +499,9 @@
                 <label for="vincVehicleId">Vehicle Involved</label>
                 <select id="vincVehicleId" required>
                     <option value="" disabled selected>Select a vehicle...</option>
-                    <option value="Truck A">Truck A</option><option value="Truck B">Truck B</option><option value="Truck C">Truck C</option>
+                    <option value="Sprinter Van">Sprinter Van</option>
+                    <option value="Small Truck">Small Truck</option>
+                    <option value="Big Truck">Big Truck</option>
                 </select>
             </div>
             <div class="form-group"><label>Date of Incident</label><input type="date" id="vincDate" required></div>
@@ -598,7 +602,7 @@
 </div>
 
 <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxKjblgrk5yadRUlkybpYVxhL--ogt_87xxHEG-swcCItVOFoErZL5k6DNhvfcHQiAr/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyVq3CxJOYQAtbtEkTXLOuoQvvImAh20HozVnf254zgITtn5SIVx2CnVbCAAqmklLMXJQ/exec";
     
     let currentEmployee = "";
 
