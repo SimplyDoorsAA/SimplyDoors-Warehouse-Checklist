@@ -637,6 +637,15 @@
         "Admin": ["Paz Galambos", "Kevin Nguyen"]
     };
 
+    function checkSession() {
+        if (!currentEmployee) {
+            alert("Session expired. Please log in again.");
+            location.reload();
+            return false;
+        }
+        return true;
+    }
+
     function selectDepartment(dept, element) {
         document.querySelectorAll('.dept-pill').forEach(pill => pill.classList.remove('active'));
         element.classList.add('active');
@@ -823,6 +832,8 @@
 
     async function submitEodForm(event) {
         event.preventDefault();
+        if (!checkSession()) return;
+        
         const role = document.getElementById('eodRole').value;
         let p1, p2;
 
@@ -851,6 +862,7 @@
 
     async function submitReceivingForm(event) {
         event.preventDefault();
+        if (!checkSession()) return;
         
         let finalLocation = document.getElementById('recvLocationDrop').value;
         if (finalLocation === 'Custom') {
@@ -877,6 +889,8 @@
 
     async function submitVehicleForm(event) {
         event.preventDefault();
+        if (!checkSession()) return;
+        
         const criticalFlags = document.querySelectorAll('#vehicleView .critical-flag:checked');
         const hasCriticalIssue = criticalFlags.length > 0;
         const remarks = document.getElementById('vehRemarks').value.trim();
@@ -903,6 +917,8 @@
 
     async function submitEmployeeIncidentForm(event) {
         event.preventDefault();
+        if (!checkSession()) return;
+        
         const payload = {
             FormType: "Employee Incident",
             Employee: currentEmployee,
@@ -925,6 +941,8 @@
     
     async function submitVehicleIncidentForm(event) {
         event.preventDefault();
+        if (!checkSession()) return;
+        
         const payload = {
             FormType: "Vehicle Incident",
             Employee: currentEmployee,
@@ -944,6 +962,8 @@
 
     async function submitDisciplinaryForm(event) {
         event.preventDefault();
+        if (!checkSession()) return;
+        
         const payload = {
             FormType: "Disciplinary Action",
             Employee: currentEmployee,
