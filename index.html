@@ -134,11 +134,21 @@
         .hidden { display: none !important; }
         .timestamp-display { font-weight: bold; color: var(--primary); }
 
+        .pill-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .dept-pill {
+            background: var(--card-bg); border: 2px solid var(--border); border-radius: 30px;
+            padding: 12px; text-align: center; font-weight: bold; cursor: pointer;
+            transition: all 0.2s ease; color: var(--secondary);
+        }
+        .dept-pill:hover { border-color: var(--primary); color: var(--primary); }
+        .dept-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
         @media (max-width: 768px) {
             .grid-2, .grid-3, .dashboard-grid { grid-template-columns: 1fr; }
             .checklist-item { flex-direction: column; align-items: flex-start; gap: 10px; }
             .radio-group { width: 100%; justify-content: flex-start; padding-top: 10px; border-top: 1px dashed var(--border); }
             .header-controls { flex-direction: column; gap: 15px; align-items: flex-start; }
+            .pill-container { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -148,27 +158,28 @@
     <img src="https://raw.githubusercontent.com/SimplyDoorsAA/SimplyDoors-Warehouse-Checklist/main/Simply%20doors%20logo3.png" alt="SimplyDoors Logo" class="brand-logo" onerror="this.style.display='none'">
     <h1 style="text-align: center; border: none;">Operations Portal</h1>
     <div class="section">
-        <h2>Team Sign In</h2>
-        <div class="form-group">
-            <label for="employeeName">Select Employee</label>
-            <select id="employeeName" required>
-                <option value="" disabled selected>Select your name...</option>
-                <option value="Jaime Mendoza">Jaime Mendoza</option>
-                <option value="Jose Blanco">Jose Blanco</option>
-                <option value="Jay Bryant">Jay Bryant</option>
-                <option value="Elijah Kimmel">Elijah Kimmel</option>
-                <option value="Ramiro Zuniga">Ramiro Zuniga</option>
-                <option value="Gerardo Zuniga">Gerardo Zuniga</option>
-                <option value="Lupe Sanchez">Lupe Sanchez</option>
-                <option value="Adem Atis">Adem Atis</option>
-                <option value="Admin">Admin</option>
-            </select>
+        <h2 style="text-align: center; border: none;">Select Department</h2>
+        
+        <div class="pill-container">
+            <div class="dept-pill" onclick="selectDepartment('Warehouse / Driver', this)">Warehouse / Driver</div>
+            <div class="dept-pill" onclick="selectDepartment('Production', this)">Production</div>
+            <div class="dept-pill" onclick="selectDepartment('Sales', this)">Sales</div>
+            <div class="dept-pill" onclick="selectDepartment('Admin', this)">Admin</div>
         </div>
-        <div class="form-group" id="passwordGroup">
-            <label for="employeePassword">Master PIN</label>
-            <input type="password" id="employeePassword" placeholder="Enter your 4-digit PIN">
+
+        <div id="loginCredentials" class="hidden">
+            <div class="form-group">
+                <label for="employeeName">Select Employee</label>
+                <select id="employeeName" required>
+                    <option value="" disabled selected>Select your name...</option>
+                </select>
+            </div>
+            <div class="form-group" id="passwordGroup">
+                <label for="employeePassword">Master PIN</label>
+                <input type="password" id="employeePassword" placeholder="Enter your 6-digit PIN">
+            </div>
+            <button class="btn" id="loginBtn" onclick="startSession()">Access Portal</button>
         </div>
-        <button class="btn" id="loginBtn" onclick="startSession()">Access Portal</button>
     </div>
 </div>
 
@@ -312,6 +323,13 @@
                 <select id="recvSalesNotify">
                     <option value="None" selected>None / Do not notify</option>
                     <option value="Adem@simplydoors.com">Adem Atis</option>
+                    <option value="steven@simplydoors.com">Steven Chandler</option>
+                    <option value="john@simplydoors.com">John Suttin</option>
+                    <option value="coryb@simplydoors.com">Cory Broyles</option>
+                    <option value="dennish@simplydoors.com">Dennis Haberer</option>
+                    <option value="paz@simplydoors.com">Paz Galambos</option>
+                    <option value="kevinn@simplydoors.com">Kevin Nguyen</option>
+                    <option value="isaiahs@simplydoors.com">Isaiah Stratton</option>
                 </select>
             </div>
 
@@ -560,7 +578,13 @@
                     <option value="Gerardo Zuniga">Gerardo Zuniga</option>
                     <option value="Lupe Sanchez">Lupe Sanchez</option>
                     <option value="Adem Atis">Adem Atis</option>
-                    <option value="Admin">Admin</option>
+                    <option value="Steven Chandler">Steven Chandler</option>
+                    <option value="John Suttin">John Suttin</option>
+                    <option value="Cory Broyles">Cory Broyles</option>
+                    <option value="Dennis Haberer">Dennis Haberer</option>
+                    <option value="Paz Galambos">Paz Galambos</option>
+                    <option value="Kevin Nguyen">Kevin Nguyen</option>
+                    <option value="Isaiah Stratton">Isaiah Stratton</option>
                 </select>
             </div>
             <div class="form-group">
@@ -604,6 +628,31 @@
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyVq3CxJOYQAtbtEkTXLOuoQvvImAh20HozVnf254zgITtn5SIVx2CnVbCAAqmklLMXJQ/exec";
     
     let currentEmployee = "";
+    let isCurrentUserAdmin = false;
+    
+    const teamCategories = {
+        "Warehouse / Driver": ["Jaime Mendoza", "Jose Blanco", "Jay Bryant", "Elijah Kimmel"],
+        "Production": ["Lupe Sanchez", "Isaiah Stratton", "Ramiro Zuniga", "Gerardo Zuniga"],
+        "Sales": ["Adem Atis", "Steven Chandler", "John Suttin", "Cory Broyles", "Dennis Haberer"],
+        "Admin": ["Paz Galambos", "Kevin Nguyen"]
+    };
+
+    function selectDepartment(dept, element) {
+        document.querySelectorAll('.dept-pill').forEach(pill => pill.classList.remove('active'));
+        element.classList.add('active');
+
+        const selectMenu = document.getElementById('employeeName');
+        selectMenu.innerHTML = '<option value="" disabled selected>Select your name...</option>';
+        
+        teamCategories[dept].forEach(name => {
+            const option = document.createElement('option');
+            option.value = name;
+            option.textContent = name;
+            selectMenu.appendChild(option);
+        });
+
+        document.getElementById('loginCredentials').classList.remove('hidden');
+    }
 
     async function startSession() {
         const nameSelect = document.getElementById('employeeName').value;
@@ -624,6 +673,8 @@
 
             if (result.valid) {
                 currentEmployee = nameSelect;
+                isCurrentUserAdmin = result.isAdmin === true;
+                
                 document.getElementById('loginView').classList.add('hidden');
                 document.getElementById('dashboardView').classList.remove('hidden');
                 document.getElementById('dashTimestamp').innerText = new Date().toLocaleString();
@@ -684,7 +735,7 @@
 
     function showForm(viewId) {
         if (viewId === 'disciplinaryView') {
-            if (currentEmployee !== "Lupe Sanchez" && currentEmployee !== "Adem Atis" && currentEmployee !== "Admin") {
+            if (!isCurrentUserAdmin) {
                 alert("Unauthorized: You do not have managerial permissions to access this module.");
                 return;
             }
