@@ -190,6 +190,10 @@
         <span class="timestamp-display" id="dashTimestamp"></span>
     </div>
     <div class="dashboard-grid">
+        <div class="dashboard-card" style="border: 2px solid var(--primary); background: #f2f9eb;" onclick="window.location.href='measure.html'">
+            <h3 style="color: var(--primary); border-bottom: none; margin-bottom: 5px;">Measure App</h3>
+            <p>Launch field measurement & specification tool.</p>
+        </div>
         <div class="dashboard-card" onclick="showForm('eodView')">
             <h3>End of Shift</h3>
             <p>Complete daily close-out procedures, cleaning, and readiness checklists.</p>
@@ -684,6 +688,9 @@
                 currentEmployee = nameSelect;
                 isCurrentUserAdmin = result.isAdmin === true;
                 
+                localStorage.setItem('sd_current_user', currentEmployee);
+                localStorage.setItem('sd_is_admin', isCurrentUserAdmin);
+
                 document.getElementById('loginView').classList.add('hidden');
                 document.getElementById('dashboardView').classList.remove('hidden');
                 document.getElementById('dashTimestamp').innerText = new Date().toLocaleString();
